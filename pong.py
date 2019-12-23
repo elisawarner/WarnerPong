@@ -46,11 +46,11 @@ def initialize_ball(player=2,speed=1):
     v = pygame.math.Vector2()
     if player == 2: # computer
         v.x = 21
-        v.y = 20
+        v.y = int(np.random.random() * n)
         di = init_direction(2,speed)
     else:
         v.x = m-21
-        v.y = 20
+        v.y = int(np.random.random() * n)
         di = init_direction(1,speed)
     return v, di
 
@@ -85,6 +85,10 @@ p2_bottomleft = p2 + pygame.Vector2((0,70))
 target_loc = pygame.math.Vector2()
 target_loc.y = int(np.random.random() * 70) # can vary as any integer between
 target_loc.x = 0
+c = 0 # default speed of paddle 1 (player)
+default_speed = 4 # default speed of paddle 2 (computer)
+d = default_speed # set temp speed of paddle 2
+reset_round = False
 
 # paddle dir
 pdi = pygame.math.Vector2()
@@ -105,16 +109,17 @@ while carryOn:
     # --- Main event loop
     keys = pygame.key.get_pressed()  #checking pressed keys
     if keys[pygame.K_UP] and topleft.y > 1:
-        topleft = topleft - (4 * pdi)
-        topright = topright - (4 * pdi)
-        bottomright = bottomright - (4 * pdi)
-        bottomleft = bottomleft - (4 * pdi)
+        c+=1
+        topleft = topleft - (c * pdi)
+        topright = topright - (c * pdi)
+        bottomright = bottomright - (c * pdi)
+        bottomleft = bottomleft - (c * pdi)
     if keys[pygame.K_DOWN] and bottomleft.y < n :
-        topleft = topleft + (4 * pdi)
-        topright = topright + (4 * pdi)
-        bottomright = bottomright + (4 * pdi)
-        bottomleft = bottomleft + (4 * pdi)
- 
+        c+=1
+        topleft = topleft + (c * pdi)
+        topright = topright + (c * pdi)
+        bottomright = bottomright + (c * pdi)
+        bottomleft = bottomleft + (c * pdi)
     # --- Game logic should go here
     
     # control ball direction
@@ -152,20 +157,20 @@ while carryOn:
         print(v)
         if v.x+r >= topright.x:
             di.x = di.x * -1.1
-            v.x = v.x - r
+            v.x = v.x - int(np.random.random()*r)
         elif v.x-r <= topleft.x:
             #di.y = di.y * -1.6
             di.x = di.x * -1.1
-            v.x = v.x - r
+            v.x = v.x - int(np.random.random()*r)
         else:
             if v.y < topright.y:
                 di.y = di.y * 1.1
                 di.x = di.x * -1.1
-                v.y = v.y + r
-                v.x = v.x - r
+                v.y = v.y + int(np.random.random()*r)
+                v.x = v.x - int(np.random.random()*r)
             else:
                 di.y = di.y * -1.1
-                v.y = v.y - r
+                v.y = v.y - int(np.random.random()*r)
     
     for event in pygame.event.get(): # User did something
         if event.type == pygame.QUIT: # If user clicked close
@@ -174,45 +179,86 @@ while carryOn:
             if event.key == pygame.K_LEFT:
                 di.x = di.x * -2.6 # spike
                 ballcolor = RED
- 
+        elif event.type == pygame.KEYUP:
+            c = 0
+
     # AUTOMATE PADDLE 1
-    start_time = np.random.choice([2,3,4],1)
+    print(d)
     if v.x < (m / start_time) and v.x > p2_bottomright.x and p2_topleft != v-target_loc:
         if p2_topleft.y < (v.y - target_loc.y) and p2_bottomright.y < n:
-            p2_topleft = p2_topleft + (4*pdi)
-            p2_topright = p2_topright + (4*pdi)
-            p2_bottomright = p2_bottomright + (4*pdi)
-            p2_bottomleft = p2_bottomleft + (4*pdi)
+            p2_topleft = p2_topleft + (d*pdi)
+            p2_topright = p2_topright + (d*pdi)
+            p2_bottomright = p2_bottomright + (d*pdi)
+            p2_bottomleft = p2_bottomleft + (d*pdi)
+
+            if (v.y - target_loc.y) - p2_topleft.y < d and d > 1:
+                d -= 1
+            else:
+                d = round(default_speed)
         elif p2_topleft.y > (v.y - target_loc.y) and p2_topleft.y > 1 :
-            p2_topleft = p2_topleft - (4*pdi)
-            p2_topright = p2_topright - (4*pdi)
-            p2_bottomright = p2_bottomright - (4*pdi)
-            p2_bottomleft = p2_bottomleft - (4*pdi)
+            p2_topleft = p2_topleft - (d*pdi)
+            p2_topright = p2_topright - (d*pdi)
+            p2_bottomright = p2_bottomright - (d*pdi)
+            p2_bottomleft = p2_bottomleft - (d*pdi)
+
+            if p2_topleft.y - (v.y - target_loc.y) < d and d > 1:
+                d -= 1
+            else:
+                d = round(default_speed)
+    else: # go back to center
+        if p2_topleft.y < 200:
+            p2_topleft = p2_topleft + (d*pdi)
+            p2_topright = p2_topright + (d*pdi)
+            p2_bottomright = p2_bottomright + (d*pdi)
+            p2_bottomleft = p2_bottomleft + (d*pdi)
+
+            if 200 -  p2_topleft.y < d and d > 1:
+                d -= 1
+            else:
+                d = round(default_speed)
+        elif p2_topleft.y > 200:
+            p2_topleft = p2_topleft - (d*pdi)
+            p2_topright = p2_topright - (d*pdi)
+            p2_bottomright = p2_bottomright - (d*pdi)
+            p2_bottomleft = p2_bottomleft - (d*pdi)
+
+            if p2_topleft.y - 200 < d and d > 1:
+                d -= 1
+            else:
+                d = round(default_speed)
     
-    if count_timer % 300 == 0:
+    if reset_round:
+        # update target location
         target_loc = pygame.math.Vector2()
         target_loc.y = int(np.random.random() * 70) # can vary as any integer between
         target_loc.x = 0
+
+        # update when computer starts to move
         start_time = np.random.choice([2,3,4],1)
+
+        # update computer speed
+        default_speed += .2
+
+        reset_round = False
 
     # paddle bounce
     if paddle2.colliderect(ball):
         if v.x+r >= p2_topright.x:
             di.x = di.x * -1.1
-            v.x = v.x+r
+            v.x = v.x+ int(np.random.random()*r)
         elif v.x-r <= p2_topleft.x:
             #di.y = di.y * -1.6
             di.x = di.x * -1.1
-            v.x = v.x - r
+            v.x = v.x - int(np.random.random()*r)
         else:
             if v.y < p2_topright.y:
                 di.y = di.y * 1.1
                 di.x = di.x * -1.1
                 v.x = v.x + r
-                v.y = v.y + r
+                v.y = v.y + int(np.random.random()*r)
             else:
                 di.y = di.y * -1.1
-                v.y = v.y + r
+                v.y = v.y + int(np.random.random()*r)
 
     # DEFINE A WIN
     if v.x >= m - r: # player 2 computer wins
@@ -220,11 +266,13 @@ while carryOn:
         v, di = initialize_ball(2, speed)
         score_dict[2] = score_dict[2] + 1
         scored = False
+        reset_round = True
     elif v.x <= r: # player 1 human wins
         print('Player 1 wins')
         v, di = initialize_ball(1, speed)
         score_dict[1] = score_dict[1] + 1
         scored = False
+        reset_round = True
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
