@@ -1,7 +1,8 @@
 # Warner Pong README
 
 Author: Elisa Warner  
-Date:  Dec 23, 2019  
+Date:  Dec 23, 2019 
+Last Update: Jan 5, 2020 
 
 **Description:** This is a game dedicated to my dad, who once upon a time made a similar "Warner Pong" game in Turbo C (based on the old Pong games). This was an attempt to recreate his work based on my memory of the game, with a new Warner tweak.
 
