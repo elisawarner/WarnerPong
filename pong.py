@@ -93,7 +93,7 @@ comp_speed = default_speed # set temp speed of paddle 2
 reset_round = False
 
 # paddle dir
-pdi = pygame.math.Vector2()
+pdi = pygame.math.Vector2() # point of this is to control only up/down paddle mvmts and not mvmt along x axis
 pdi.x = 0
 pdi.y = 1
 
@@ -273,9 +273,6 @@ while carryOn:
  
  # Once we have exited the main program loop we can stop the game engine:
 pygame.quit()
-
-
-# In[ ]:
 
 
 
