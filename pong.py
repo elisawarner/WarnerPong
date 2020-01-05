@@ -46,6 +46,8 @@ def init_direction(player=2,speed=1):
     return ball_vec
 
 def initialize_ball(player=2,speed=1):
+    hit_toggle = False
+
     ball_coord = pygame.math.Vector2()
     if player == 2: # computer
         ball_coord.x = 21
@@ -55,7 +57,7 @@ def initialize_ball(player=2,speed=1):
         ball_coord.x = m-21
         ball_coord.y = int(np.random.random() * n)
         ball_vec = init_direction(1,speed)
-    return ball_coord, ball_vec
+    return ball_coord, ball_vec, hit_toggle, player
 
 def text_objects(text, font):
     textSurface = font.render(text, True, BLACK)
@@ -70,7 +72,7 @@ def paddle(top_left_coord):
     return [topleft, topright, bottomright, bottomleft]
 
 # initialize ball
-ball_coord, ball_vec = initialize_ball()
+ball_coord, ball_vec, hit_toggle, player = initialize_ball()
 ballcolor = BLACK
 
 # initialize player paddle coordinates
@@ -112,8 +114,8 @@ while carryOn:
     for event in pygame.event.get(): # User did something
         if event.type == pygame.QUIT: # If user clicked close
             carryOn = False # Flag that we are done so we exit this loop
-        elif event.type == pygame.KEYDOWN and paddle2.colliderect(ball):
-            if event.key == pygame.K_LEFT:
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT and paddle1.colliderect(ball):
                 ball_vec.x = ball_vec.x * -2.6 # spike
                 ballcolor = RED
         elif event.type == pygame.KEYUP:
@@ -163,21 +165,23 @@ while carryOn:
         player1_coord = player1_coord + (player1_speed * pdi)
 
     # paddle hit ball
-    if paddle1.colliderect(ball): # player
+    if paddle1.colliderect(ball) and hit_toggle: # player
         #if ball_coord.x+r >= player1_coord.x + PADDLE_WIDTH: # if hits back of the paddle
         #    ball_vec.x = ball_vec.x * -1.1
         #    ball_coord.x = ball_coord.x - int(np.random.random()*r)
-        if ball_coord.x-r <= player1_coord.x: # if hits front of paddle
+        if ball_coord.x+r <= player1_coord.x: # if hits front of paddle
             ball_vec.x = ball_vec.x * -1.1
             ball_coord.x = ball_coord.x - int(np.random.random()*r)
         elif ball_coord.y < player1_coord.y: # hits above paddle
-            ball_vec.y = ball_vec.y * 1.1
+            ball_vec.y = ball_vec.y * -1.1
             ball_vec.x = ball_vec.x * -1.1
-            ball_coord.y = ball_coord.y + int(np.random.random()*r)
+            ball_coord.y = ball_coord.y - int(np.random.random()*r)
             ball_coord.x = ball_coord.x - int(np.random.random()*r)
         elif ball_coord.y > player1_coord.y: # hits below paddle
-            ball_vec.y = ball_vec.y * -1.1
-            ball_coord.y = ball_coord.y - int(np.random.random()*r)
+            ball_vec.y = ball_vec.y * 1.1
+            ball_coord.y = ball_coord.y + int(np.random.random()*r)
+            ball_vec.x = ball_vec.x * -1.1
+            ball_coord.x = ball_coord.x - int(np.random.random()*r)
     
 
     # AUTOMATE COMPUTER PADDLE
@@ -228,7 +232,7 @@ while carryOn:
         reset_round = False
 
     # paddle bounce
-    if paddle2.colliderect(ball):
+    if paddle2.colliderect(ball) and hit_toggle:
         if ball_coord.x + r >= comp_coord.x + PADDLE_WIDTH:
             ball_vec.x = ball_vec.x * -1.1
             ball_coord.x = ball_coord.x+ int(np.random.random()*r)
@@ -244,16 +248,25 @@ while carryOn:
             ball_vec.y = ball_vec.y * -1.1
             ball_coord.y = ball_coord.y + int(np.random.random()*r)
 
+    # flip hit_toggle (to prevent points from ball bouncing)
+    if hit_toggle == False:
+        if ball_coord.x > comp_coord.x + PADDLE_WIDTH + r and player == 2: # comp
+            hit_toggle = True
+        elif ball_coord.x < player1_coord.x - r and player == 1: # player 1
+            hit_toggle = True
+
     # DEFINE A WIN
     if ball_coord.x >= m - r: # player 2 computer wins
         print('Player 2 wins')
-        ball_coord, ball_vec = initialize_ball(2, speed)
+        player = 2
+        ball_coord, ball_vec, hit_toggle, player = initialize_ball(player, speed)
         score_dict[2] = score_dict[2] + 1
         scored = False
         reset_round = True
     elif ball_coord.x <= r: # player 1 human wins
         print('Player 1 wins')
-        ball_coord, ball_vec = initialize_ball(1, speed)
+        player = 1
+        ball_coord, ball_vec, hit_toggle, player = initialize_ball(player, speed)
         score_dict[1] = score_dict[1] + 1
         scored = False
         reset_round = True
