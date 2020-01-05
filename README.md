@@ -19,5 +19,4 @@ Currently, the rules are simple: press the UP and DOWN keys to move. There is a 
 
 ## Future Plans:
 1. Add a title page and effects for spiking
-2. Make spiking a little easier to do
-3. Create a Hall of Fame for when the game ends. Define game ending
+2. Create a Hall of Fame for when the game ends. Define game ending
