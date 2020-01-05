@@ -101,7 +101,6 @@ pdi.y = 1
 r = 10 # radius of ball
 u = 60 # controls speed of game
 
-count_timer = 0
 start_time = np.random.choice([2,3,4],1)
 speed = 2
 scored = False
@@ -263,7 +262,6 @@ while carryOn:
     pygame.display.flip()
      
     # --- Limit to 60 frames per second
-    count_timer += 1
     clock.tick(60)
 
     if score_dict[1] % 5 == 0 and scored == False:
