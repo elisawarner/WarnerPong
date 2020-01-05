@@ -18,7 +18,6 @@ It has been tested on a Mac using Python 3.6 with Anaconda. To run, simply type 
 Currently, the rules are simple: press the UP and DOWN keys to move. There is a difficult maneuver called a "spike," which occurs when you press LEFT at the same time the ball collides with the paddle. The ball flashes a red color when this happens and then it moves faster.
 
 ## Future Plans:
-1. Refactor code so that the players fit into a class
-2. Add a title page and effects for spiking
-3. Make spiking a little easier to do
-4. Create a Hall of Fame for when the game ends. Define game ending
+1. Add a title page and effects for spiking
+2. Make spiking a little easier to do
+3. Create a Hall of Fame for when the game ends. Define game ending
